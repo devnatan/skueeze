@@ -29,4 +29,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build with Gradle
-        run: ./gradlew test
+        run: ./gradlew allTests
