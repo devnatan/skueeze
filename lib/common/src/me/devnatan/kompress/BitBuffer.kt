@@ -6,7 +6,7 @@ internal class BitBuffer {
     private var bitsInBuffer: Int = 0
 
     fun writeBits(value: UInt, numBits: Int) {
-        require(numBits in 1..32) { "numBits must be between 1 and 32, got $numBits" }
+        require(numBits in 1..32) { "`numBits` must be between 1 and 32. Given $numBits" }
 
         val masked = if (numBits == 32) {
             value
@@ -28,8 +28,8 @@ internal class BitBuffer {
     }
 
     fun readBits(numBits: Int): UInt {
-        require(numBits in 1..32) { "numBits must be between 1 and 32, got $numBits" }
-        require(bitsInBuffer >= numBits) { "Not enough bits in buffer: need $numBits, have $bitsInBuffer" }
+        require(numBits in 1..32) { "`numBits` must be between 1 and 32. Given: $numBits" }
+        require(bitsInBuffer >= numBits) { "Not enough bits in buffer. Expected: $numBits, given: $bitsInBuffer" }
 
         val value = if (numBits == 32)
             buffer
