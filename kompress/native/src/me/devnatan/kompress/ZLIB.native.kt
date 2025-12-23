@@ -57,7 +57,7 @@ internal actual fun zlibInflate(input: ByteArray): ByteArray =
 @OptIn(ExperimentalForeignApi::class)
 internal actual fun zlibDeflate(input: ByteArray): ByteArray =
     memScoped {
-        val compressedBuffer = ByteArray(compressBound(input.size.toULong()).toInt())
+        val compressedBuffer = ByteArray(compressBound(input.size.toUInt()).toInt())
 
         val stream = alloc<z_stream>()
         stream.avail_in = input.size.toUInt()
