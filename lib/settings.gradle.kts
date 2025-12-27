@@ -7,3 +7,9 @@ pluginManagement {
         }
     }
 }
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}

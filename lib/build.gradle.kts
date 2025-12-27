@@ -1,5 +1,9 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     kotlin("multiplatform") version "2.3.0"
+    id("org.jetbrains.kotlin.plugin.allopen") version "2.3.0"
+    id("org.jetbrains.kotlinx.benchmark") version "0.4.15"
 }
 
 group = "me.devnatan"
@@ -7,45 +11,87 @@ version = "0.1.0"
 
 kotlin {
     explicitApi()
-    mingwX64("native")
+    mingwX64()
 
-//    val hostOs = System.getProperty("os.name")
-//    val isArm64 = System.getProperty("os.arch") == "aarch64"
-//    val isMingwX64 = hostOs.startsWith("Windows")
-//    when {
-//        hostOs == "Mac OS X" && isArm64 -> macosArm64("native")
-//        hostOs == "Mac OS X" && !isArm64 -> macosX64("native")
-//        hostOs == "Linux" && isArm64 -> linuxArm64("native")
-//        hostOs == "Linux" && !isArm64 -> linuxX64("native")
-//        isMingwX64 -> mingwX64("native")
-//        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-//    }
-//
+    targets.withType<KotlinNativeTarget> {
+        val benchmark by compilations.creating {
+            associateWith(this@withType.compilations.getByName("main"))
+        }
+    }
+
     sourceSets.configureEach {
-        val suffix = "Main"
-        val platform = name.dropLast(suffix.length)
-        val srcDir = if (name.endsWith(suffix)) "src" else "test"
-        kotlin.srcDir("$platform/$srcDir")
+        val sourceSetName = name
 
-        val resourcesFile = if (srcDir == "src") "resources" else "test-resources"
-        resources.srcDirs("$platform/$resourcesFile")
+        when (sourceSetName) {
+            "commonMain" -> {
+                kotlin.srcDir("common/src")
+                resources.srcDirs("common/resources")
+            }
+            "commonTest" -> {
+                kotlin.srcDir("common/test")
+                resources.srcDirs("common/test-resources")
+            }
+            "commonBenchmark" -> {
+                kotlin.srcDir("common/benchmarks")
+                resources.srcDir("common/benchmarks-resources")
+            }
+        }
 
         languageSettings {
-            progressiveMode = true
+            progressiveMode = false
         }
     }
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+        }
+
+        val commonBenchmark by creating {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.15")
+            }
+        }
 
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
             }
         }
+    }
+}
 
-//        val nativeMain by getting { dependsOn(commonMain) }
-//        val appleMain by creating { dependsOn(nativeMain) }
-//        val macosArm64Main by creating { dependsOn(appleMain) }
+allOpen {
+    annotation("org.openjdk.jmh.annotations.State")
+}
+
+benchmark {
+    targets {
+         register("mingwX64Benchmark")
+    }
+
+    configurations {
+        named("main") {
+            warmups = 5
+            iterations = 10
+            iterationTime = 1
+            iterationTimeUnit = "s"
+            reportFormat = "json"
+        }
+
+        register("fast") {
+            warmups = 2
+            iterations = 5
+            iterationTime = 500
+            iterationTimeUnit = "ms"
+            reportFormat = "text"
+        }
+
+        register("thorough") {
+            warmups = 10
+            iterations = 20
+            iterationTime = 2
+            iterationTimeUnit = "s"
+            reportFormat = "json"
+        }
     }
 }
