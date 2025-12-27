@@ -4,6 +4,7 @@ plugins {
     kotlin("multiplatform") version "2.3.0"
     id("org.jetbrains.kotlin.plugin.allopen") version "2.3.0"
     id("org.jetbrains.kotlinx.benchmark") version "0.4.15"
+    id("org.jmailen.kotlinter") version "5.3.0"
 }
 
 group = "me.devnatan"
@@ -27,10 +28,12 @@ kotlin {
                 kotlin.srcDir("common/src")
                 resources.srcDirs("common/resources")
             }
+
             "commonTest" -> {
                 kotlin.srcDir("common/test")
                 resources.srcDirs("common/test-resources")
             }
+
             "commonBenchmark" -> {
                 kotlin.srcDir("common/benchmarks")
                 resources.srcDir("common/benchmarks-resources")
@@ -66,7 +69,7 @@ allOpen {
 
 benchmark {
     targets {
-         register("mingwX64Benchmark")
+        register("mingwX64Benchmark")
     }
 
     configurations {
@@ -94,4 +97,8 @@ benchmark {
             reportFormat = "json"
         }
     }
+}
+
+tasks.check {
+    dependsOn("installKotlinterPrePushHook")
 }

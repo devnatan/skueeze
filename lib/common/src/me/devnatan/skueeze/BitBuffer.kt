@@ -5,14 +5,18 @@ internal class BitBuffer {
     private var buffer: UInt = 0u
     private var bitsInBuffer: Int = 0
 
-    fun writeBits(value: UInt, numBits: Int) {
+    fun writeBits(
+        value: UInt,
+        numBits: Int,
+    ) {
         require(numBits in 1..32) { "`numBits` must be between 1 and 32. Given $numBits" }
 
-        val masked = if (numBits == 32) {
-            value
-        } else {
-            value and ((1u shl numBits) - 1u)
-        }
+        val masked =
+            if (numBits == 32) {
+                value
+            } else {
+                value and ((1u shl numBits) - 1u)
+            }
 
         if (bitsInBuffer + numBits <= 32) {
             buffer = buffer or (masked shl bitsInBuffer)
@@ -31,15 +35,19 @@ internal class BitBuffer {
         require(numBits in 1..32) { "`numBits` must be between 1 and 32. Given: $numBits" }
         require(bitsInBuffer >= numBits) { "Not enough bits in buffer. Expected: $numBits, given: $bitsInBuffer" }
 
-        val value = if (numBits == 32)
-            buffer
-        else
-            buffer and ((1u shl numBits) - 1u)
+        val value =
+            if (numBits == 32) {
+                buffer
+            } else {
+                buffer and ((1u shl numBits) - 1u)
+            }
 
-        buffer = if (numBits == 32)
-            0u
-        else
-            buffer shr numBits
+        buffer =
+            if (numBits == 32) {
+                0u
+            } else {
+                buffer shr numBits
+            }
 
         bitsInBuffer -= numBits
 
