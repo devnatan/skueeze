@@ -1,8 +1,9 @@
 # skueeze
 
-**The Ultimate Multiplatform Data Compression Library**
+100% Pure Kotlin Native implementation with zero dependencies.
 
-100% Pure Kotlin Native implementation with zero dependencies. Works everywhere Kotlin runs.
+> [!WARNING]
+> This project is a **study case** built as part of a learning process. It explores ideas and patterns and is **not meant to be used in production**.
 
 | Algorithm | RFC | Status | Description |
 |-----------|-----|--------|-------------|
